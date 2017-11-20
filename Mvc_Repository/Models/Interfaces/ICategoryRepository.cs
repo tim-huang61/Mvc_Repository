@@ -1,8 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Mvc_Repository.Models.Interfaces
 {
-    public interface ICategoryRepository 
+    public interface ICategoryRepository : IDisposable
     {
         void Create(Category category);
 

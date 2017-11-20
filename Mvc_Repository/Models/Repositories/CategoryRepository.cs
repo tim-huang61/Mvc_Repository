@@ -5,7 +5,7 @@ using Mvc_Repository.Models.Interfaces;
 
 namespace Mvc_Repository.Models.Repositories
 {
-    internal class CategoryRepository : ICategoryRepository, IDisposable
+    internal class CategoryRepository : ICategoryRepository
     {
         private NorthwindEntities db;
 

@@ -5,7 +5,7 @@ using Mvc_Repository.Models.Interfaces;
 
 namespace Mvc_Repository.Models.Repositories
 {
-    internal class ProductRepository : IProductRepository , IDisposable
+    internal class ProductRepository : IProductRepository
     {
         private NorthwindEntities db;
 

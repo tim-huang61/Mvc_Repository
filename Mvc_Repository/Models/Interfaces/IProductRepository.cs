@@ -1,8 +1,9 @@
+using System;
 using System.Linq;
 
 namespace Mvc_Repository.Models.Interfaces
 {
-    public interface IProductRepository
+    public interface IProductRepository : IDisposable
     {
         void Create(Product product);
 
