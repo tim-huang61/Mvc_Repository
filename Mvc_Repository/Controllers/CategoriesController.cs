@@ -7,32 +7,35 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
+using Mvc_Repository.Models.Interfaces;
+using Mvc_Repository.Models.Repositories;
 
 namespace Mvc_Repository.Controllers
 {
     public class CategoriesController : Controller
     {
-        private NorthwindEntities db = new NorthwindEntities();
+        private ICategoryRepository categoryRepository;
+
+        public CategoriesController()
+        {
+            categoryRepository = new CategoryRepository();
+        }
 
         // GET: Categories
         public ActionResult Index()
         {
-            return View(db.Categories.ToList());
+            return View(categoryRepository.GetAll().ToList());
         }
 
         // GET: Categories/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("index");
             }
-            Category category = db.Categories.Find(id);
-            if (category == null)
-            {
-                return HttpNotFound();
-            }
-            return View(category);
+
+            return View(categoryRepository.Get(id.Value));
         }
 
         // GET: Categories/Create
@@ -50,8 +53,8 @@ namespace Mvc_Repository.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Categories.Add(category);
-                db.SaveChanges();
+                categoryRepository.Delete(category);
+
                 return RedirectToAction("Index");
             }
 
@@ -61,16 +64,12 @@ namespace Mvc_Repository.Controllers
         // GET: Categories/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
-            if (category == null)
-            {
-                return HttpNotFound();
-            }
-            return View(category);
+
+            return View(categoryRepository.Get(id.Value));
         }
 
         // POST: Categories/Edit/5
@@ -82,26 +81,24 @@ namespace Mvc_Repository.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(category).State = EntityState.Modified;
-                db.SaveChanges();
+                categoryRepository.Update(category);
+
                 return RedirectToAction("Index");
             }
+
             return View(category);
         }
 
         // GET: Categories/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+
+            if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Category category = db.Categories.Find(id);
-            if (category == null)
-            {
-                return HttpNotFound();
-            }
-            return View(category);
+
+            return View(categoryRepository.Get(id.Value));
         }
 
         // POST: Categories/Delete/5
@@ -109,9 +106,12 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Category category = db.Categories.Find(id);
-            db.Categories.Remove(category);
-            db.SaveChanges();
+            var category = this.categoryRepository.Get(id);
+            if (category != null)
+            {
+                this.categoryRepository.Delete(category);
+            }
+      
             return RedirectToAction("Index");
         }
 
@@ -119,7 +119,7 @@ namespace Mvc_Repository.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                this.categoryRepository.Dispose();
             }
             base.Dispose(disposing);
         }

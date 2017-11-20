@@ -7,39 +7,43 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
+using Mvc_Repository.Models.Interfaces;
+using Mvc_Repository.Models.Repositories;
 
 namespace Mvc_Repository.Controllers
 {
     public class ProductsController : Controller
     {
-        private NorthwindEntities db = new NorthwindEntities();
+        private IProductRepository productRepository;
+        private ICategoryRepository categoryRepository;
+
+        public ProductsController()
+        {
+            productRepository = new ProductRepository();
+            categoryRepository = new CategoryRepository();
+        }
 
         // GET: Products
         public ActionResult Index()
         {
-            var products = db.Products.Include(p => p.Category);
-            return View(products.ToList());
+            return View(productRepository.GetAll().ToList());
         }
 
         // GET: Products/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Products.Find(id);
-            if (product == null)
-            {
-                return HttpNotFound();
-            }
-            return View(product);
+
+            return View(productRepository.Get(id.Value));
         }
 
         // GET: Products/Create
         public ActionResult Create()
         {
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName");
+            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName");
             return View();
         }
 
@@ -52,28 +56,27 @@ namespace Mvc_Repository.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Products.Add(product);
-                db.SaveChanges();
+                productRepository.Create(product);
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+
             return View(product);
         }
 
         // GET: Products/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id = 0)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Product product = db.Products.Find(id);
+            var product = this.productRepository.Get(id);
             if (product == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+        
+            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+
             return View(product);
         }
 
@@ -86,26 +89,25 @@ namespace Mvc_Repository.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(product).State = EntityState.Modified;
-                db.SaveChanges();
+                this.productRepository.Update(product);
+
                 return RedirectToAction("Index");
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryName", product.CategoryID);
+
+            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+
             return View(product);
         }
 
         // GET: Products/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Product product = db.Products.Find(id);
+            var product = this.productRepository.Get(id);
             if (product == null)
             {
                 return HttpNotFound();
             }
+
             return View(product);
         }
 
@@ -114,9 +116,9 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.Products.Find(id);
-            db.Products.Remove(product);
-            db.SaveChanges();
+            var product = this.productRepository.Get(id);
+            this.productRepository.Delete(product);
+
             return RedirectToAction("Index");
         }
 
@@ -124,8 +126,10 @@ namespace Mvc_Repository.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                this.productRepository.Dispose();
+                this.categoryRepository.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }
