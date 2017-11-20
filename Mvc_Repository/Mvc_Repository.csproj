@@ -161,6 +161,7 @@
     </Compile>
     <Compile Include="Models\Interfaces\ICategoryRepository.cs" />
     <Compile Include="Models\Interfaces\IProductRepository.cs" />
+    <Compile Include="Models\Interfaces\IRepository.cs" />
     <Compile Include="Models\Northwind.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -180,6 +181,7 @@
       <DependentUpon>Northwind.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Repositories\CategoryRepository.cs" />
+    <Compile Include="Models\Repositories\GenericRepository.cs" />
     <Compile Include="Models\Repositories\ProductRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
