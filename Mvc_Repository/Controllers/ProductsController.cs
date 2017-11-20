@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
 using Mvc_Repository.Models.Interfaces;
@@ -14,13 +9,13 @@ namespace Mvc_Repository.Controllers
 {
     public class ProductsController : Controller
     {
-        private IProductRepository productRepository;
-        private ICategoryRepository categoryRepository;
+        private IRepository<Product> productRepository;
+        private IRepository<Category> categoryRepository;
 
         public ProductsController()
         {
-            productRepository = new ProductRepository();
-            categoryRepository = new CategoryRepository();
+            productRepository = new GenericRepository<Product>();
+            categoryRepository = new GenericRepository<Category>();
         }
 
         // GET: Products
@@ -37,7 +32,7 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(productRepository.Get(id.Value));
+            return View(productRepository.Get(p => p.CategoryID == id.Value));
         }
 
         // GET: Products/Create
@@ -69,7 +64,7 @@ namespace Mvc_Repository.Controllers
         // GET: Products/Edit/5
         public ActionResult Edit(int id = 0)
         {
-            var product = this.productRepository.Get(id);
+            var product = this.productRepository.Get(p => p.CategoryID == id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -102,7 +97,7 @@ namespace Mvc_Repository.Controllers
         // GET: Products/Delete/5
         public ActionResult Delete(int id)
         {
-            var product = this.productRepository.Get(id);
+            var product = this.productRepository.Get(p => p.CategoryID == id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -116,7 +111,7 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var product = this.productRepository.Get(id);
+            var product = this.productRepository.Get(p => p.CategoryID == id);
             this.productRepository.Delete(product);
 
             return RedirectToAction("Index");

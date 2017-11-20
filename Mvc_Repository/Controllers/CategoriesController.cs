@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
 using Mvc_Repository.Models.Interfaces;
@@ -14,11 +9,11 @@ namespace Mvc_Repository.Controllers
 {
     public class CategoriesController : Controller
     {
-        private ICategoryRepository categoryRepository;
+        private IRepository<Category> categoryRepository;
 
         public CategoriesController()
         {
-            categoryRepository = new CategoryRepository();
+            categoryRepository = new GenericRepository<Category>();
         }
 
         // GET: Categories
@@ -35,7 +30,7 @@ namespace Mvc_Repository.Controllers
                 return RedirectToAction("index");
             }
 
-            return View(categoryRepository.Get(id.Value));
+            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
         }
 
         // GET: Categories/Create
@@ -69,7 +64,7 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.Get(id.Value));
+            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
         }
 
         // POST: Categories/Edit/5
@@ -98,7 +93,7 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.Get(id.Value));
+            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
         }
 
         // POST: Categories/Delete/5
@@ -106,12 +101,12 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var category = this.categoryRepository.Get(id);
+            var category = this.categoryRepository.Get(c => c.CategoryID == id);
             if (category != null)
             {
                 this.categoryRepository.Delete(category);
             }
-      
+
             return RedirectToAction("Index");
         }
 
