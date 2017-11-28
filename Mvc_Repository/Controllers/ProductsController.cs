@@ -6,7 +6,7 @@ using Mvc_Repository.Models;
 using Mvc_Repository.Models.Interfaces;
 using Mvc_Repository.Models.Repositories;
 
-namespace Mvc_Repository.Controllers
+namespace Mvc_Repository.Web.Controllers
 {
     public class ProductsController : Controller
     {

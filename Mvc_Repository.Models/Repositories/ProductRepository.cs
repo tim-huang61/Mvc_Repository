@@ -4,7 +4,7 @@ using Mvc_Repository.Models.Interfaces;
 
 namespace Mvc_Repository.Models.Repositories
 {
-    internal class ProductRepository : GenericRepository<Product>, IProductRepository
+    public class ProductRepository : GenericRepository<Product>, IProductRepository
     {
         public Product GetByID(int productID)
         {

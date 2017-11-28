@@ -2,7 +2,7 @@ using Mvc_Repository.Models.Interfaces;
 
 namespace Mvc_Repository.Models.Repositories
 {
-    internal class CategoryRepository : GenericRepository<Category>, ICategoryRepository
+    public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
         public Category GetByID(int categoryID)
         {

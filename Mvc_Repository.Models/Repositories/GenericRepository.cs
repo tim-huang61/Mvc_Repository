@@ -6,7 +6,7 @@ using Mvc_Repository.Models.Interfaces;
 
 namespace Mvc_Repository.Models.Repositories
 {
-    internal class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private DbContext dbContext;
 
@@ -39,12 +39,12 @@ namespace Mvc_Repository.Models.Repositories
 
         public TEntity Get(Expression<Func<TEntity, bool>> predicate)
         {
-            return this.dbContext.Set<TEntity>().FirstOrDefault(predicate);
+            return Queryable.FirstOrDefault(this.dbContext.Set<TEntity>(), predicate);
         }
 
         public IQueryable<TEntity> GetAll()
         {
-            return this.dbContext.Set<TEntity>().AsQueryable();
+            return Queryable.AsQueryable<TEntity>(this.dbContext.Set<TEntity>());
         }
 
         public void SaveChanges()
