@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
@@ -9,19 +10,20 @@ namespace Mvc_Repository.Controllers
 {
     public class ProductsController : Controller
     {
-        private IRepository<Product> productRepository;
-        private IRepository<Category> categoryRepository;
+        private IProductRepository productRepository;
+        private ICategoryRepository categoryRepository;
+        public IEnumerable<Category> Categories => categoryRepository.GetAll();
 
         public ProductsController()
         {
-            productRepository = new GenericRepository<Product>();
-            categoryRepository = new GenericRepository<Category>();
+            productRepository = new ProductRepository();
+            categoryRepository = new CategoryRepository();
         }
 
         // GET: Products
         public ActionResult Index()
         {
-            return View(productRepository.GetAll().ToList());
+            return View(productRepository.GetAll().OrderByDescending(x => x.ProductID).ToList());
         }
 
         // GET: Products/Details/5
@@ -32,13 +34,13 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(productRepository.Get(p => p.CategoryID == id.Value));
+            return View(productRepository.GetByID(id.Value));
         }
 
         // GET: Products/Create
         public ActionResult Create()
         {
-            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName");
+            ViewBag.CategoryID = new SelectList(Categories, "CategoryID", "CategoryName");
             return View();
         }
 
@@ -56,7 +58,7 @@ namespace Mvc_Repository.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.CategoryID = new SelectList(Categories, "CategoryID", "CategoryName", product.CategoryID);
 
             return View(product);
         }
@@ -70,7 +72,7 @@ namespace Mvc_Repository.Controllers
                 return HttpNotFound();
             }
         
-            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.CategoryID = new SelectList(Categories, "CategoryID", "CategoryName", product.CategoryID);
 
             return View(product);
         }
@@ -89,7 +91,7 @@ namespace Mvc_Repository.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryID = new SelectList(categoryRepository.GetAll(), "CategoryID", "CategoryName", product.CategoryID);
+            ViewBag.CategoryID = new SelectList(Categories, "CategoryID", "CategoryName", product.CategoryID);
 
             return View(product);
         }
@@ -97,7 +99,7 @@ namespace Mvc_Repository.Controllers
         // GET: Products/Delete/5
         public ActionResult Delete(int id)
         {
-            var product = this.productRepository.Get(p => p.CategoryID == id);
+            var product = this.productRepository.GetByID(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -111,7 +113,7 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var product = this.productRepository.Get(p => p.CategoryID == id);
+            var product = this.productRepository.GetByID(id);
             this.productRepository.Delete(product);
 
             return RedirectToAction("Index");

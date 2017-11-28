@@ -9,17 +9,17 @@ namespace Mvc_Repository.Controllers
 {
     public class CategoriesController : Controller
     {
-        private IRepository<Category> categoryRepository;
+        private ICategoryRepository categoryRepository;
 
         public CategoriesController()
         {
-            categoryRepository = new GenericRepository<Category>();
+            categoryRepository = new CategoryRepository();
         }
 
         // GET: Categories
         public ActionResult Index()
         {
-            return View(categoryRepository.GetAll().ToList());
+            return View(categoryRepository.GetAll().OrderByDescending(x => x.CategoryID).ToList());
         }
 
         // GET: Categories/Details/5
@@ -30,7 +30,7 @@ namespace Mvc_Repository.Controllers
                 return RedirectToAction("index");
             }
 
-            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
+            return View(categoryRepository.GetByID(id.Value));
         }
 
         // GET: Categories/Create
@@ -64,7 +64,7 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
+            return View(categoryRepository.GetByID(id.Value));
         }
 
         // POST: Categories/Edit/5
@@ -93,7 +93,7 @@ namespace Mvc_Repository.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.Get(c => c.CategoryID == id.Value));
+            return View(categoryRepository.GetByID(id.Value));
         }
 
         // POST: Categories/Delete/5
@@ -101,7 +101,7 @@ namespace Mvc_Repository.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var category = this.categoryRepository.Get(c => c.CategoryID == id);
+            var category = this.categoryRepository.GetByID(id);
             if (category != null)
             {
                 this.categoryRepository.Delete(category);
