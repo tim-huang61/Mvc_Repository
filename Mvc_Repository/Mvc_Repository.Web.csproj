@@ -215,6 +215,10 @@
       <Project>{40a31f43-21e8-4a19-9f90-3852afa91a0d}</Project>
       <Name>Mvc_Repository.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Mvc_Repository.Services\Mvc_Repository.Services.csproj">
+      <Project>{ff08f3a5-1366-4a56-a708-5302da027634}</Project>
+      <Name>Mvc_Repository.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

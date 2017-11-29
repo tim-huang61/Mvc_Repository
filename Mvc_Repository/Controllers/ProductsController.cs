@@ -3,27 +3,27 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
-using Mvc_Repository.Models.Interfaces;
-using Mvc_Repository.Models.Repositories;
+using Mvc_Repository.Services;
+using Mvc_Repository.Services.Interfaces;
 
 namespace Mvc_Repository.Web.Controllers
 {
     public class ProductsController : Controller
     {
-        private IProductRepository productRepository;
-        private ICategoryRepository categoryRepository;
-        public IEnumerable<Category> Categories => categoryRepository.GetAll();
+        private IProductService productService;
+        private ICategoryService categoryService;
+        public IEnumerable<Category> Categories => categoryService.GetAll();
 
         public ProductsController()
         {
-            productRepository = new ProductRepository();
-            categoryRepository = new CategoryRepository();
+            this.productService = new ProductService();
+            this.categoryService = new CategoryService();
         }
 
         // GET: Products
         public ActionResult Index()
         {
-            return View(productRepository.GetAll().OrderByDescending(x => x.ProductID).ToList());
+            return View(productService.GetAll().OrderByDescending(x => x.ProductID).ToList());
         }
 
         // GET: Products/Details/5
@@ -34,7 +34,7 @@ namespace Mvc_Repository.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(productRepository.GetByID(id.Value));
+            return View(productService.GetByID(id.Value));
         }
 
         // GET: Products/Create
@@ -53,7 +53,7 @@ namespace Mvc_Repository.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                productRepository.Create(product);
+                productService.Create(product);
 
                 return RedirectToAction("Index");
             }
@@ -66,7 +66,7 @@ namespace Mvc_Repository.Web.Controllers
         // GET: Products/Edit/5
         public ActionResult Edit(int id = 0)
         {
-            var product = this.productRepository.Get(p => p.CategoryID == id);
+            var product = this.productService.GetByID(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -86,7 +86,7 @@ namespace Mvc_Repository.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                this.productRepository.Update(product);
+                this.productService.Update(product);
 
                 return RedirectToAction("Index");
             }
@@ -99,7 +99,7 @@ namespace Mvc_Repository.Web.Controllers
         // GET: Products/Delete/5
         public ActionResult Delete(int id)
         {
-            var product = this.productRepository.GetByID(id);
+            var product = this.productService.GetByID(id);
             if (product == null)
             {
                 return HttpNotFound();
@@ -113,21 +113,9 @@ namespace Mvc_Repository.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var product = this.productRepository.GetByID(id);
-            this.productRepository.Delete(product);
+            this.productService.Delete(id);
 
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.productRepository.Dispose();
-                this.categoryRepository.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

@@ -1,25 +1,26 @@
-﻿using System.Linq;
+﻿using System.Data;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
-using Mvc_Repository.Models.Interfaces;
-using Mvc_Repository.Models.Repositories;
+using Mvc_Repository.Services;
+using Mvc_Repository.Services.Interfaces;
 
 namespace Mvc_Repository.Web.Controllers
 {
     public class CategoriesController : Controller
     {
-        private ICategoryRepository categoryRepository;
+        private ICategoryService categoryService;
 
         public CategoriesController()
         {
-            categoryRepository = new CategoryRepository();
+            categoryService = new CategoryService();
         }
 
         // GET: Categories
         public ActionResult Index()
         {
-            return View(categoryRepository.GetAll().OrderByDescending(x => x.CategoryID).ToList());
+            return View(categoryService.GetAll().OrderByDescending(x => x.CategoryID).ToList());
         }
 
         // GET: Categories/Details/5
@@ -30,7 +31,7 @@ namespace Mvc_Repository.Web.Controllers
                 return RedirectToAction("index");
             }
 
-            return View(categoryRepository.GetByID(id.Value));
+            return View(categoryService.GetByID(id.Value));
         }
 
         // GET: Categories/Create
@@ -48,7 +49,7 @@ namespace Mvc_Repository.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                categoryRepository.Delete(category);
+                categoryService.Create(category);
 
                 return RedirectToAction("Index");
             }
@@ -64,7 +65,7 @@ namespace Mvc_Repository.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.GetByID(id.Value));
+            return View(categoryService.GetByID(id.Value));
         }
 
         // POST: Categories/Edit/5
@@ -76,7 +77,7 @@ namespace Mvc_Repository.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                categoryRepository.Update(category);
+                categoryService.Update(category);
 
                 return RedirectToAction("Index");
             }
@@ -93,7 +94,7 @@ namespace Mvc_Repository.Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            return View(categoryRepository.GetByID(id.Value));
+            return View(categoryService.GetByID(id.Value));
         }
 
         // POST: Categories/Delete/5
@@ -101,22 +102,16 @@ namespace Mvc_Repository.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var category = this.categoryRepository.GetByID(id);
-            if (category != null)
+            try
             {
-                this.categoryRepository.Delete(category);
+                this.categoryService.Delete(id);
+            }
+            catch (DataException)
+            {
+                return RedirectToAction("Delete", new { id = id });
             }
 
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.categoryRepository.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

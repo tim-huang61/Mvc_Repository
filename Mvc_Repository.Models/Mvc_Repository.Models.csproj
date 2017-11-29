@@ -67,8 +67,6 @@
     <Compile Include="Category.cs">
       <DependentUpon>Northwind.tt</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\ICategoryRepository.cs" />
-    <Compile Include="Interfaces\IProductRepository.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Northwind.Context.cs">
       <AutoGen>True</AutoGen>
@@ -89,9 +87,7 @@
       <DependentUpon>Northwind.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\CategoryRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
-    <Compile Include="Repositories\ProductRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
