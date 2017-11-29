@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mvc_Repository.Models;
 using Mvc_Repository.Models.Interfaces;
-using Mvc_Repository.Models.Repositories;
 using Mvc_Repository.Services.Interfaces;
 using Mvc_Repository.Services.Misc;
 
@@ -11,7 +10,12 @@ namespace Mvc_Repository.Services
 {
     public class CategoryService : ICategoryService
     {
-        private IRepository<Category> repository = new GenericRepository<Category>();
+        private IRepository<Category> repository; 
+
+        public CategoryService(IRepository<Category> repository)
+        {
+            this.repository = repository;
+        }
 
         public IResult Create(Category instance)
         {

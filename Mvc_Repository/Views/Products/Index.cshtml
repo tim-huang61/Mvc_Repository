@@ -3,12 +3,15 @@
 @{
     ViewBag.Title = "Index";
 }
-
+   CategorySelectList
 <h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
-</p>
+</p> 
+<div>
+    @Html.DropDownList("Category", ViewBag.CategorySelectList as IEnumerable<SelectListItem>, new {onchange = "changeCategory(this)" })
+</div>
 <table class="table">
     <tr>
         <th>
@@ -78,4 +81,12 @@
     </tr>
 }
 
-</table>
+</table>   
+
+@section scripts{
+    <script>
+        function changeCategory(parameters) {
+            location.href = '/products?category=' + $('#Category').val();
+        }
+    </script>
+}

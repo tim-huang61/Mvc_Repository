@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Mvc_Repository.Models;
-using Mvc_Repository.Services;
 using Mvc_Repository.Services.Interfaces;
 
 namespace Mvc_Repository.Web.Controllers
@@ -12,9 +11,9 @@ namespace Mvc_Repository.Web.Controllers
     {
         private ICategoryService categoryService;
 
-        public CategoriesController()
+        public CategoriesController(ICategoryService categoryService)
         {
-            categoryService = new CategoryService();
+            this.categoryService = categoryService;
         }
 
         // GET: Categories

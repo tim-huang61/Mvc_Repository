@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -14,16 +15,55 @@ namespace Mvc_Repository.Web.Controllers
         private ICategoryService categoryService;
         public IEnumerable<Category> Categories => categoryService.GetAll();
 
-        public ProductsController()
+        public ProductsController(IProductService productService, ICategoryService categoryService)
         {
-            this.productService = new ProductService();
-            this.categoryService = new CategoryService();
+            this.productService = productService;
+            this.categoryService = categoryService;
         }
 
         // GET: Products
-        public ActionResult Index()
+        public ActionResult Index(string category = "all")
         {
-            return View(productService.GetAll().OrderByDescending(x => x.ProductID).ToList());
+            int categoryID = 1;
+            ViewBag.CategorySelectList = int.TryParse(category, out categoryID)
+                ? this.CategorySelectList(categoryID.ToString())
+                : this.CategorySelectList("all");
+
+            var result = category.Equals("all", StringComparison.OrdinalIgnoreCase)
+              ? productService.GetAll()
+              : productService.GetByCategory(categoryID);
+
+            var products = result.OrderByDescending(x => x.ProductID).ToList();
+
+            ViewBag.Category = category;
+
+            return View(products);
+        }
+
+        public List<SelectListItem> CategorySelectList(string selectedValue = "all")
+        {
+            List<SelectListItem> items = new List<SelectListItem>
+            {
+                new SelectListItem()
+                {
+                    Text = "All Category",
+                    Value = "all",
+                    Selected = selectedValue.Equals("all", StringComparison.OrdinalIgnoreCase)
+                }
+            };
+
+            var categories = this.categoryService.GetAll().OrderBy(x => x.CategoryID);
+            foreach (var c in categories)
+            {
+                items.Add(new SelectListItem
+                {
+                    Text = c.CategoryName,
+                    Value = c.CategoryID.ToString(),
+                    Selected = selectedValue.Equals(c.CategoryID.ToString())
+                });
+            }
+
+            return items;
         }
 
         // GET: Products/Details/5

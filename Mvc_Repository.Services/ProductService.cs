@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mvc_Repository.Models;
 using Mvc_Repository.Models.Interfaces;
-using Mvc_Repository.Models.Repositories;
 using Mvc_Repository.Services.Interfaces;
 using Mvc_Repository.Services.Misc;
 
@@ -11,7 +10,12 @@ namespace Mvc_Repository.Services
 {
     public class ProductService : IProductService
     {
-        private IRepository<Product> repository = new GenericRepository<Product>();
+        private IRepository<Product> repository;
+
+        public ProductService(IRepository<Product> repository)
+        {
+            this.repository = repository;
+        }
 
         public Misc.IResult Create(Product instance)
         {
